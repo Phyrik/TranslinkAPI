@@ -13,7 +13,7 @@ namespace CIF
     {
         public override CIFFileType Type { get; } = CIFFileType.ATCOCIF;
         public ATCOCIFFileHeaderRecord FileHeaderRecord { get; private set; }
-        public List<ATCOCIFRecord> Records { get; private set; }
+        public List<ATCOCIFRecord> Records { get; private set; } = new List<ATCOCIFRecord>();
 
         public ATCOCIFFile(ATCOCIFFileHeaderRecord fileHeaderRecord)
         {
@@ -25,7 +25,7 @@ namespace CIF
     {
         public override CIFFileType Type { get; } = CIFFileType.RJISCIF;
         public RJISCIFFileHeaderRecord FileHeaderRecord { get; private set; }
-        public List<RJISCIFRecord> Records { get; private set; }
+        public List<RJISCIFRecord> Records { get; private set; } = new List<RJISCIFRecord>();
 
         public RJISCIFFile(RJISCIFFileHeaderRecord fileHeaderRecord)
         {

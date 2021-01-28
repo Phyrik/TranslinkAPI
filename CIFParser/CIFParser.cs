@@ -12,7 +12,7 @@ namespace CIF
 {
     public class CIFParser
     {
-        public static CIFFile ParseCIFFile(string filePath)
+        public static CIFFile ParseCIFFile(string filePath, bool dealWithTranslink = false)
         {
             string[] cifFileLines = File.ReadAllLines(filePath);
             string fileHeaderRecordString = cifFileLines[0];
@@ -25,7 +25,7 @@ namespace CIF
                     throw new Exception("Unknown CIF file format.");
 
                 case CIFFileType.ATCOCIF:
-                    return ParseATCOCIFFile(cifFileLines);
+                    return ParseATCOCIFFile(cifFileLines, dealWithTranslink);
 
                 case CIFFileType.RJISCIF:
                     return ParseRJISCIFFile(cifFileLines);
@@ -42,7 +42,7 @@ namespace CIF
             return CIFFileType.Unknown;
         }
 
-        public static ATCOCIFFile ParseATCOCIFFile(string[] cifFileLines)
+        public static ATCOCIFFile ParseATCOCIFFile(string[] cifFileLines, bool dealWithTranslink = false)
         {
             ATCOCIFFileHeaderRecord fileHeaderRecord = (ATCOCIFFileHeaderRecord)ParseRecord(cifFileLines[0], CIFRecordIdentity.ATCOCIFFileHeader);
 
@@ -54,6 +54,7 @@ namespace CIF
 
                 string recordString = cifFileLines[lineNumber];
                 CIFRecordIdentity recordIdentity = IdentifyRecord(recordString);
+                if (dealWithTranslink) if (recordIdentity == CIFRecordIdentity.QB || recordIdentity == CIFRecordIdentity.QP || recordIdentity == CIFRecordIdentity.QQ || recordIdentity == CIFRecordIdentity.QV || recordIdentity == CIFRecordIdentity.QD) continue;
                 ATCOCIFRecord record = (ATCOCIFRecord)ParseRecord(recordString, recordIdentity);
                 atcoCifFile.Records.Add(record);
             }
@@ -82,7 +83,7 @@ namespace CIF
 
         public static CIFRecordIdentity IdentifyRecord(string recordString)
         {
-            if (recordString.Substring(0, 8) == "ATCO-CIF") return CIFRecordIdentity.ATCOCIFFileHeader;
+            if (recordString.Length >= 8 && recordString.Substring(0, 8) == "ATCO-CIF") return CIFRecordIdentity.ATCOCIFFileHeader;
             
             try
             {
@@ -136,6 +137,7 @@ namespace CIF
                     {
                         if (fieldStringValue == cifRecordFieldConvertToBoolAttribute.trueString) propertyValue = true;
                         else if (fieldStringValue == cifRecordFieldConvertToBoolAttribute.falseString) propertyValue = false;
+                        else if (string.IsNullOrWhiteSpace(fieldStringValue)) propertyValue = false;
                         else throw new Exception("Malformed record.");
                     }
                     else if (cifRecordFieldConvertToDateTimeAttribute != null)
