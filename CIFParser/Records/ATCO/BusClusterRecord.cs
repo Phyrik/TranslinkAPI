@@ -3,6 +3,9 @@ using System;
 
 namespace CIF.Records.ATCO
 {
+    /// <summary>
+    /// Note: this is not a cluster of buses, rather a cluster of bus stops.
+    /// </summary>
     [CIFRecordIdentity(CIFRecordIdentity.QC)]
     public class BusClusterRecord : ATCOCIFRecord
     {
